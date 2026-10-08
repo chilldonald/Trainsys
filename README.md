@@ -15,13 +15,10 @@
 
 ## 🛠 Технологии
 
-| Слой        | Стек                                   |
-|-------------|----------------------------------------|
-| Backend     | Python 3.x, Django 5.2+                |
-| База данных | PostgreSQL / SQLite                    |
-| Frontend    | HTML5, CSS3, JavaScript (Fetch API)    |
-| Окружение   | python-dotenv                          |
-
+- **Backend:** Python, Django 5.2
+- **База данных:** SQLite
+- **Frontend:** HTML, CSS, Vanilla JS, Chart.js
+- **Конфигурация:** python-dotenv
 ---
 
 ## 💻 Локальный запуск
