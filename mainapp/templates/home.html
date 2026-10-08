@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="home-container">
+    <div class="workout-grid" style="display: grid; gap: 15px;">
+        {% for workout in workouts %}
+        <a href="{% url 'workout_detail' workout.id %}" style="text-decoration: none;">
+            <div class="exercise-card completed" style="border-left-color: var(--accent-color);">
+                <div class="card-info">
+                    <strong>Тренировка #{{ forloop.revcounter }}</strong>
+                    <p>{{ workout.date|date:"d E Y" }} • {{ workout.workoutentry_set.count }} упр.</p>
+                </div>
+                <div style="color: var(--accent-color);">→</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

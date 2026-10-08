@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <h2>Профиль</h2>
+        <div class="profile-info">
+            <div class="avatar-placeholder"></div>
+            <h3>{{ user.username }}</h3>
+            <p>Участник с {{ user.date_joined|date:"d M Y" }}</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span>Тренировок</span>
+                <p>{{ total_workouts }}</p>
+            </div>
+            <div class="stat-item">
+                <span>MMR</span>
+                <p>{{ MMR }}</p>
+            </div>
+            <div class="stat-item">
+                <span>Общий тоннаж</span>
+                <p>{{ total_volume }}t</p>
+            </div>
+        </div>
+
+        <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
+    </div>
+</div>
+{% endblock %}

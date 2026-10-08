@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="analytics-container" style="padding: 15px; max-width: 800px; margin: 0 auto;">
+    <h2 style="margin-bottom: 20px; color: #fff;">Аналитика прогресса</h2>
+    
+    <div id="exercises-wrapper" style="display: flex; flex-direction: column; gap: 15px;"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const allData = JSON.parse('{{ chart_data_json|escapejs }}');
+    const container = document.getElementById('exercises-wrapper');
+    const exercises = Object.keys(allData);
+
+    if (exercises.length === 0) {
+        container.innerHTML = '<p style="color: #b0b0b0;">Пока нет сохраненных данных для аналитики.</p>';
+    }
+
+    const renderedCharts = new Set();
+
+    exercises.forEach((exName, index) => {
+        const data = allData[exName];
+        
+        const card = document.createElement('details');
+        card.style.background = '#1a1a1a';
+        card.style.borderRadius = '12px';
+        card.style.padding = '15px';
+        card.style.border = '1px solid #333';
+        card.style.cursor = 'pointer';
+
+        const weightCanvasId = `chart-1rm-${index}`;
+        const volumeCanvasId = `chart-volume-${index}`;
+
+        card.innerHTML = `
+            <summary style="font-size: 1.1rem; font-weight: bold; color: var(--accent-color, #48bb78); outline: none;">
+                🏋️ ${exName}
+            </summary>
+            
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 25px;">
+                <!-- График 1: Расчетный 1RM -->
+                <div style="background: #111; padding: 12px; border-radius: 8px;">
+                    <h4 style="color: #fff; margin-bottom: 5px; font-size: 0.95rem;">⚡ Расчетный 1RM (Одноповторный максимум)</h4>
+                    <p style="color: #888; font-size: 0.75rem; margin-bottom: 12px;">Показывает чистый прогресс силы (формула Epley)</p>
+                    <canvas id="${weightCanvasId}"></canvas>
+                </div>
+
+                <!-- График 2: Суммарный тоннаж -->
+                <div style="background: #111; padding: 12px; border-radius: 8px;">
+                    <h4 style="color: #fff; margin-bottom: 5px; font-size: 0.95rem;">📊 Общий тоннаж сессии (кг)</h4>
+                    <p style="color: #888; font-size: 0.75rem; margin-bottom: 12px;">Общий объём поднятого веса за день</p>
+                    <canvas id="${volumeCanvasId}"></canvas>
+                </div>
+            </div>
+        `;
+
+        card.addEventListener('toggle', function() {
+            if (this.open && !renderedCharts.has(index)) {
+                renderedCharts.add(index);
+                
+                // 1. График 1RM
+                createChart(weightCanvasId, data.labels, data.max_1rms, '1RM (кг)', '#48bb78');
+                
+                // 2. График Тоннажа
+                createChart(volumeCanvasId, data.labels, data.volumes, 'Тоннаж (кг)', '#3182ce');
+            }
+        });
+
+        container.appendChild(card);
+    });
+
+    function createChart(canvasId, labels, datasetData, labelName, color) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: labelName,
+                    data: datasetData,
+                    borderColor: color,
+                    backgroundColor: color + '22',
+                    borderWidth: 2,
+                    tension: 0.2,
+                    fill: true,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { ticks: { color: '#b0b0b0' }, grid: { color: '#222' } },
+                    x: { ticks: { color: '#b0b0b0' }, grid: { color: '#222' } }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

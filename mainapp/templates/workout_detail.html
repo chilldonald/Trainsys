@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="workout-detail-container">
+    
+    <div class="detail-header">
+        <h2>Отчет по тренировке</h2>
+        <div class="date-badge">
+            <span>🗓 {{ workout.date|date:"d E Y" }}</span>
+        </div>
+    </div>
+
+    <div class="summary-list">
+        {% for entry in entries %}
+        <div class="stat-card">
+            <div class="card-top">
+                <h3 class="exercise-title">{{ entry.exercise.name }}</h3>
+                <span class="status-tag">DONE</span>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="mini-stat">
+                    <span class="stat-label">Вес</span>
+                    <strong class="stat-value">{{ entry.weight }}<small>кг</small></strong>
+                </div>
+                <div class="mini-stat border-x">
+                    <span class="stat-label">Сеты</span>
+                    <strong class="stat-value">{{ entry.sets }}</strong>
+                </div>
+                <div class="mini-stat">
+                    <span class="stat-label">Повторы</span>
+                    <strong class="stat-value">{{ entry.reps }}</strong>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <span class="volume-text">
+                    Тоннаж: <span class="volume-value">{{ entry.total_volume }} кг</span>
+                </span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <p>В этой сессии записей не обнаружено.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="actions-area" style="display: flex; flex-direction: column; gap: 12px; margin-top: 25px;">
+        <a href="{% url 'home' %}" class="back-link">
+            Назад к списку 🏋️
+        </a>
+
+        <!-- Форма удаления тренировки -->
+        <form action="{% url 'delete_workout' workout.id %}" method="POST" onsubmit="return confirm('Вы уверены, что хотите удалить эту тренировку?');">
+            {% csrf_token %}
+            <button type="submit" class="delete-workout-btn" style="width: 100%; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; color: #ff4d4d; padding: 12px; border-radius: 10px; font-weight: 500; cursor: pointer;">
+                🗑️ Удалить тренировку
+            </button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

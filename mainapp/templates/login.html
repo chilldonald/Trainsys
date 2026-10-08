@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="avatar-placeholder" style="background: linear-gradient(45deg, #1a1a1a, #333);">
+            <span style="font-size: 3rem; line-height: 100px;">🏋️</span>
+        </div>
+        
+        <h2 style="margin-bottom: 25px; color: #fff;">Вход</h2>
+
+        <form method="POST" class="auth-form">
+            {% csrf_token %}
+            <div style="margin-bottom: 15px;">
+                <input type="text" name="username" placeholder="Логин" required class="main-input">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <input type="password" name="password" placeholder="Пароль" required class="main-input">
+            </div>
+
+            <button type="submit" class="save-btn" style="background: #fff; color: #000; border: none;">
+                Войти
+            </button>
+        </form>
+
+        <p style="margin-top: 20px; font-size: 0.9rem; color: var(--accent-color);">
+            Нет аккаунта? <a href="{% url 'register' %}" style="color: #fff; text-decoration: none; font-weight: 500;">Создать</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

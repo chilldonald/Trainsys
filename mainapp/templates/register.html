@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <h2 style="margin-bottom: 10px; color: #fff;">Регистрация</h2>
+        <p style="color: var(--accent-color); font-size: 0.9rem; margin-bottom: 25px;">Присоединяйся к тренировкам</p>
+
+        <form method="POST" class="auth-form">
+            {% csrf_token %}
+            <div style="margin-bottom: 12px;">
+                <input type="text" name="username" placeholder="Придумайте логин" required class="main-input">
+            </div>
+            <div style="margin-bottom: 12px;">
+                <input type="password" name="password" placeholder="Пароль" required class="main-input">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <input type="password" name="password_confirm" placeholder="Повторите пароль" required class="main-input">
+            </div>
+
+            <button type="submit" class="save-btn" style="background: #fff; color: #000; border: none;">
+                Зарегистрироваться
+            </button>
+        </form>
+
+        <a href="{% url 'login' %}" class="logout-btn" style="color: var(--accent-color);">Уже есть аккаунт</a>
+    </div>
+</div>
+{% endblock %}

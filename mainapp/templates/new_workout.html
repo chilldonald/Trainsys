@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="home-container">
+    <h2>Новая тренировка</h2>
+
+    <div id="temp-list" class="today-workout"></div>
+
+    <button id="submit-all" class="save-btn" style="display: none; background: #48bb78; color: white; margin-bottom: 20px; border: none;">
+        💾 Сохранить тренировку в базу
+    </button>
+
+    <hr>
+
+    <details class="add-exercise-section" id="add-details">
+        <summary class="add-btn">Добавить упражнение в список</summary>
+        
+        <form id="exercise-form" class="input-form main-add-form">
+            <label for="exercise_id">Что делаем?</label>
+            <select id="exercise_id" required>
+                <option value="" disabled selected>Выберите упражнение...</option>
+                {% for exercise in exercises %}
+                    <option value="{{ exercise.id }}">{{ exercise.name }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="stats-inputs">
+                <input id="w" placeholder="Вес (кг)" required>
+                <input id="r" placeholder="Повторы" required>
+                <input id="s" placeholder="Подходы" required>
+            </div>
+
+            <button type="submit" class="save-btn">Добавить в список</button>
+        </form>
+    </details>
+</div>
+
+<script>
+    let workoutSession = [];
+
+    const form = document.getElementById('exercise-form');
+    const tempList = document.getElementById('temp-list');
+    const submitBtn = document.getElementById('submit-all');
+    const details = document.getElementById('add-details');
+
+    function renderCards() {
+        tempList.innerHTML = ''; 
+        
+        workoutSession.forEach((entry, index) => {
+            const card = document.createElement('div');
+            card.className = 'exercise-card completed';
+            card.style.borderLeft = '4px solid var(--accent-color)';
+            card.style.display = 'flex';
+            card.style.justifyContent = 'between';
+            card.style.alignItems = 'center';
+
+            card.innerHTML = `
+                <div class="card-info" style="flex-grow: 1;">
+                    <strong>${entry.name}</strong>
+                    <p>${entry.weight}кг — ${entry.sets} x ${entry.reps}</p>
+                </div>
+                <button onclick="removeEntry(${index})" style="background: none; border: none; color: #ff6b6b; font-size: 1.2rem; cursor: pointer; padding: 0 10px;">
+                    ✕
+                </button>
+            `;
+            tempList.appendChild(card);
+        });
+
+        // Показываем кнопку сохранения, если есть хотя бы одна запись
+        submitBtn.style.display = workoutSession.length > 0 ? 'block' : 'none';
+    }
+
+    // Удаление записи из массива
+    window.removeEntry = function(index) {
+        workoutSession.splice(index, 1);
+        renderCards();
+    };
+
+    // Добавление в список
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const select = document.getElementById('exercise_id');
+        const entry = {
+            exercise_id: select.value,
+            name: select.options[select.selectedIndex].text,
+            weight: document.getElementById('w').value,
+            reps: document.getElementById('r').value,
+            sets: document.getElementById('s').value
+        };
+
+        workoutSession.push(entry);
+        renderCards();
+
+        form.reset();
+        details.removeAttribute('open');
+    });
+
+    submitBtn.addEventListener('click', function() {
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ entries: workoutSession })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                window.location.href = "{% url 'home' %}";
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(err => console.error('Ошибка:', err));
+    });
+</script>
+{% endblock %}
